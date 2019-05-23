@@ -1,10 +1,16 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.SyncFailedException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.*;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.xml.sax.SAXException;
 
@@ -14,10 +20,37 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.*;
 
+
 public class Reader 
 {
+	public static Forecast independentTake(File file)
+	{
+		File kmlFile;
+		String name = file.getName();
+		String kmz ="kmz";
+		String kml ="kml";
+		String type;
+		
+		Pattern pattern = Pattern.compile("\\w*\\.(\\w*)");
+		Matcher matcher = pattern.matcher(name);
+		matcher.find();
+		
+		type = matcher.group(1);
+		
+		if(type.equals(kmz)&&file.exists())
+		{
+			kmlFile = extract(file);
+			return take(kmlFile);
+		}
+		else if(type.equals(kml)&&file.exists())
+		{
+			return take(file);
+		}
+		return null;
+	}
 	
-	public static Forecast take(File kmzFile)
+	
+	public static Forecast take(File kmlFile)
 	{
 		
 		
@@ -315,4 +348,77 @@ public class Reader
 		return eNameN.getTextContent();
 	}
 	
+	static public File extract(File file) 
+	{
+		File here = new File("");
+		File out = null;
+
+		String s = here.getAbsolutePath();
+		
+ 		File dummy = new File("dummy.zip");
+		file.renameTo(dummy);
+		try {
+			out = unZip(dummy, s);
+			Thread.sleep(3000);
+			dummy.delete();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return out;
+	}
+	
+	private static File unZip(File zipFile, String outputFolder) throws Exception {
+
+	    byte[] buffer = new byte[1024];
+	    File nameChange = new File("MOSMIX_S_LATEST_240.kml");
+	    if(nameChange.exists())
+	    {
+	    	nameChange.delete();
+	    }
+
+	    File folder = new File(outputFolder);
+	    if (!folder.exists()) {
+	        folder.mkdir();
+	    }
+
+	    ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+	    ZipEntry ze = zis.getNextEntry();
+
+	    while (ze != null) {
+
+	        String fileName = ze.getName();
+
+	        File newFile = new File(outputFolder + File.separator + fileName);
+
+	        //System.out.println("file unzip : " + newFile.getAbsoluteFile());
+
+	        new File(newFile.getParent()).mkdirs();
+
+	        if (ze.isDirectory())
+	        {
+	            newFile.mkdir();
+	            ze = zis.getNextEntry();
+	            continue;
+	        }
+
+	        FileOutputStream fos = new FileOutputStream(newFile);
+
+	        int len;
+	        while ((len = zis.read(buffer)) > 0) {
+	            fos.write(buffer, 0, len);
+	        }
+
+	        fos.close();
+	        ze = zis.getNextEntry();
+	        newFile.renameTo(nameChange);
+	    }
+
+	    zis.closeEntry();
+	    zis.close();
+	    return nameChange;
+	}
 }
+
+

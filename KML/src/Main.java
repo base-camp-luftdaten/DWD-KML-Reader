@@ -5,13 +5,20 @@ public class Main
 {
 	public static void main(String[] args)
 	{
-		File file = new File("MOSMIX_S_2019052016_240.kml");
-		Forecast forecast = Reader.take(file);
+		File kmz = new File("MOSMIX_S_LATEST_240.kmz");
 		
-		Date von = new Date(119, 4, 23, 6, 11);
-		Date bis = new Date(119, 4, 27, 13, 48);
+		Forecast forecast = Reader.independentTake(kmz);
+		if(forecast==null)
+		{
+			forecast = Reader.independentTake(new File("MOSMIX_S_LATEST_240.kml"));
+		}
 		
-		StationData station = forecast.getStation(51.0,9.0);
+		System.out.println(forecast.positionRegister.length);
+		
+		Date von = forecast.firstAvailableDate();
+		Date bis = forecast.lastAvailableDate();
+		
+		StationData station = forecast.getStation(51.0,8.5);
 		double[] temp = forecast.temperatur(von, bis, station);
 		Date[] times = forecast.zeitschritte(von, bis);
 		

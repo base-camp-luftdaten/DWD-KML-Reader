@@ -89,7 +89,7 @@ public class Forecast
 			as = dateIndex(start);
 			ae = dateIndex(end);
 		}
-		System.out.println(ae-as+1);
+
 		double[] d = new double[ae-as+1];
 		
 		for(int i=as;i<=ae;i++)
