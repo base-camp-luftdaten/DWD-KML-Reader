@@ -8,7 +8,7 @@ zunächst mit 7Zip zu KML-Dateien entpackt werden, damit sie mit der Funktion:~~
 ~~"Forecast forecast = Reader.take(file)"~~
 
 ~~eingelesen werden können. Es ist mir bisher nicht gelungen die Konvertierung~~
-~~zu automatisieren. Die Funktion erschafft ein "Forecast"-Objekt. ~~
+~~zu automatisieren. Die Funktion erschafft~~ ~~ein "Forecast"-Objekt. ~~
 
 Edit: Mit der Funktion:
 
