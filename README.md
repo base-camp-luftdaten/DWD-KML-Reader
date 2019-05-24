@@ -2,13 +2,22 @@
 
 Java-Projekt zum einlesen von KML-Dateien des DWD-MOSMIX-Programms: 
 https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/. Bisher noch unkommentiert.
-Leider ist es noch nicht möglich, die auf opendata vorliegenden KMZ-Dateien direkt auszulesen. Diese müssen
+~~Leider ist es noch nicht möglich, die auf opendata vorliegenden KMZ-Dateien direkt auszulesen. Diese müssen
 zunächst mit 7Zip zu KML-Dateien entpackt werden, damit sie mit der Funktion:
 
-"Forecast forecast = Reader.take(file)" 
+~~"Forecast forecast = Reader.take(file)" 
 
-eingelesen werden können. Es ist mir bisher nicht gelungen die Konvertierung
-zu automatisieren. Die Funktion erschafft ein "Forecast"-Objekt. An dem wiederum lässt sich die Funktion
+~~eingelesen werden können. Es ist mir bisher nicht gelungen die Konvertierung
+zu automatisieren. Die Funktion erschafft ein "Forecast"-Objekt. 
+
+Edit: Mit der Funktion:
+
+"Forecast forecast = Reader.independentTake(file)"
+
+ist es nun möglich sowohl KML-Dateien als auch die komprimierten KMZ-Dateien des DWD einzulesen.
+In beiden Fällen wird ein Forcast-Objekt erschaffen.
+
+An dem wiederum lässt sich die Funktion:
 
 "StationData station = forecast.getStation(double lat,double lon)" 
 
