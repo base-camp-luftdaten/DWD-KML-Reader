@@ -11,12 +11,12 @@ zunächst mit 7Zip zu KML-Dateien entpackt werden, damit sie mit der Funktion:~~
 ~~zu automatisieren. Die Funktion erschafft~~ 
 ~~ein "Forecast"-Objekt.~~
 
-Edit: Mit der Funktion:
+**Edit: Mit der Funktion:**
 
-"Forecast forecast = Reader.independentTake(file)"
+**"Forecast forecast = Reader.independentTake(file)"**
 
-ist es nun möglich sowohl KML-Dateien als auch die komprimierten KMZ-Dateien des DWD einzulesen.
-In beiden Fällen wird ein Forcast-Objekt erschaffen.
+**ist es nun möglich sowohl KML-Dateien als auch die komprimierten KMZ-Dateien des DWD einzulesen.
+In beiden Fällen wird ein Forcast-Objekt erschaffen.**
 
 An dem wiederum lässt sich die Funktion:
 
