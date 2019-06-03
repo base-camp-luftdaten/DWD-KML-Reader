@@ -26,7 +26,7 @@ public class Main
 		//Die zugehoerigen Zeitpunkte zu den Vorhersagen
 		Date[] times = forecast.zeitschritte(von, bis);
 		//ACHTUNG ES MUSS GELTEN: forecast.firstAvailableDate() <= von <= bis <= forecast.lastAvailableDate()
-		//ANDERNFALLS TRITT EINE ARRAYINDEXOUTOFBOUNDSEXEPTION AUF
+		//ANDERNFALLS TRITT EINE ARRAY-INDEX-OUT-OF-BOUNDS-EXEPTION AUF
 		
 		//Konsolen Ausgabe
 		System.out.println(station.name+": "+station.coordinate.toString()+
