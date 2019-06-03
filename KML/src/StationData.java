@@ -39,10 +39,26 @@ public class StationData
 	public int foggProbabilityDataErrorClass;
 	public String foggProbabilityUnit="%";
 	
+	/**
+	 * Erzeugt ein Stationsdatenobjekt
+	 * 
+	 * @param n
+	 * Name der Station deren Daten hier in diesem Objekt gespeichert werden sollen
+	 */
+	
 	public StationData(String n)
 	{
 		name=n;
 	}
+	
+	/**
+	 * Erzeugt aus einem Daten-String einer Mosmix-KML-Datei einen Array mit Double-Werten
+	 * 
+	 * @param s
+	 * Daten-String aus einer Mosmix-KML-Datei
+	 * @return
+	 * Array mit 240 Double-Werten
+	 */
 	
 	static double[] stringToDoubArray(String s)
 	{
@@ -68,7 +84,15 @@ public class StationData
 		return d;
 	}
 	
-	
+	/**
+	 * Komplettiert einen Array mit Double-Werten bei dem Eintraege fehlen linear.
+	 * 
+	 * @param d
+	 * Array der komplettiert werden soll
+	 * @return
+	 * Gibt -1 zurueck wenn der Array keine Daten enthielt, 0 wenn keine Daten fehlten 
+	 * und 1-3 fuer verschiedene Schaedigungsgrade am gegebenen Array 
+	 */
 	
 	static int DoubArrayLinearComplete(double[] d)
 	{

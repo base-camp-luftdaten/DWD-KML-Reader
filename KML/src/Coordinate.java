@@ -5,28 +5,57 @@ public class Coordinate implements Comparable<Object>
 {
 	double lat;
 	double lon;
-	double h;
+	double hight;
+	
+	/**
+	 * Erstellt ein Koordinaten-Objekt ohne Hoehenangabe
+	 * 
+	 * @param lat1
+	 * Latitude
+	 * @param lon1
+	 * Longitude
+	 */
 	
 	public Coordinate(double lat1, double lon1)
 	{
 		lat=lat1;
 		lon=lon1;
-		h=Double.NaN;
+		hight=Double.NaN;
 	}
+	
+	/**
+	 * Erstellt ein Koordinaten-Objekt mit Hoehenangabe
+	 * 
+	 * @param lat1
+	 * Latitude
+	 * @param lon1
+	 * Longitude
+	 * @param H
+	 * Hoehe ueber Normalnull
+	 */
 	
 	public Coordinate(double lat1, double lon1, double H)
 	{
 		lat=lat1;
 		lon=lon1;
-		h=H;
+		hight=H;
 	}
 	
-	public double distance(Coordinate c) 
+	/**
+	 * Berechnet die Distanz zwischen zwei Coordinaten
+	 * 
+	 * @param cord
+	 * Koordinate zu der die Distanz berechnet wird
+	 * @return
+	 * DIstanz zwischen this und cord in Kilometer
+	 */
+	
+	public double distance(Coordinate cord) 
 	{
 		double lat1=this.lat;
 		double lon1=this.lon;
-		double lat2=c.lat;
-		double lon2=c.lon;
+		double lat2=cord.lat;
+		double lon2=cord.lon;
 		
 		if ((lat1 == lat2) && (lon1 == lon2)) {
 			return 0;
@@ -42,6 +71,17 @@ public class Coordinate implements Comparable<Object>
 		}
 	}
 	
+	/**
+	 * Spannt zwischen zwei Koordinaten ein Kugeloberflächensegment auf und prüft, ob
+	 * diese Koordinate sich innerhalb des Segments befindet 
+	 * 
+	 * @param c1
+	 * Eckpunkt 1 des Kugeloberflächensegments
+	 * @param c2
+	 * Eckpunkt 2 des Kugeloberflächensegments
+	 * @return
+	 * true wenn sich this innerhalb des Segments befindet und false wenn nicht.
+	 */
 	
 	public boolean insideField(Coordinate c1, Coordinate c2)
 	{
@@ -54,6 +94,16 @@ public class Coordinate implements Comparable<Object>
 			return true;
 		}
 	}
+	
+	/**
+	 * Erzeugt aus dem standartisierten String in der Mosmix-KML-Datei, der die 
+	 * jeweilige Position einer Station beschreibt, ein Koordinaten-Objekt
+	 * 
+	 * @param s
+	 * Ein String aus der KML-Datei der die Position einer Station beschreibt
+	 * @return
+	 * Ein dem Text entsprechendes Koordinaten Objekt
+	 */
 	
 	static public Coordinate kmlTextToCord(String s)
 	{
@@ -83,12 +133,20 @@ public class Coordinate implements Comparable<Object>
 		}
 	}
 	
-	public boolean trueEquals(Object c1)
+	/**
+	 * Gibt an, ob zwei Koordinaten in Position und Hoehe uebereinstimmen
+	 * 
+	 * @param cord
+	 * Koordinate mit der die Gleichheit ueberprueft wird
+	 * @return
+	 * true wenn Position und Hoehe gleich, sonst false
+	 */
+	
+	public boolean trueEquals(Coordinate cord)
 	{
-		Coordinate c = (Coordinate) c1;
-		double ydif = Math.abs(this.lat-c.lat);
-		double xdif = Math.abs(this.lon-c.lon);
-		if((xdif < 0.002) && (ydif < 0.002) && (this.h==c.h))
+		double ydif = Math.abs(this.lat-cord.lat);
+		double xdif = Math.abs(this.lon-cord.lon);
+		if((xdif < 0.002) && (ydif < 0.002) && (this.hight==cord.hight))
 		{
 			return true;
 		}
@@ -98,12 +156,21 @@ public class Coordinate implements Comparable<Object>
 		}
 	}
 	
+	/**
+	 * Gibt an, ob zwei Koordinaten in Position uebereinstimmen
+	 * 
+	 * @param cord
+	 * Koordinate mit der die Gleichheit ueberprueft wird
+	 * @return
+	 * true wenn Position gleich, sonst false
+	 */
+	
 	@Override
 	public boolean equals(Object c1)
 	{
-		Coordinate c = (Coordinate) c1;
-		double ydif = Math.abs(this.lat-c.lat);
-		double xdif = Math.abs(this.lon-c.lon);
+		Coordinate cord = (Coordinate) c1;
+		double ydif = Math.abs(this.lat-cord.lat);
+		double xdif = Math.abs(this.lon-cord.lon);
 		if((xdif < 0.002) && (ydif < 0.002))
 		{
 			return true;
@@ -114,21 +181,23 @@ public class Coordinate implements Comparable<Object>
 		}
 	}
 	
-	@Override
-	public int hashCode()
-	{
-		return (int) (this.lat*100000 + this.lon*10);
-	}
+	/**
+	 * Vergleicht zwei Koordinaten
+	 * 
+	 * @return
+	 * 1 wenn this eine hoehere Latitude bzw. gleiche Latitude und hoehere Longitude hat bzw.
+	 * gleiche Latitude und Longitude und groessere Hoehe; 0 wenn exakt gleich; sonst -1
+	 */
 	
 	@Override
 	public int compareTo(Object c1)
 	{
-		Coordinate c = (Coordinate) c1;
-		if(this.lat>c.lat || ((this.lat==c.lat)&&(this.lon>c.lon)) || ((this.lat==c.lat)&&(this.lon==c.lon)&&(this.h>c.h)))
+		Coordinate cord = (Coordinate) c1;
+		if(this.lat>cord.lat || ((this.lat==cord.lat)&&(this.lon>cord.lon)) || ((this.lat==cord.lat)&&(this.lon==cord.lon)&&(this.hight>cord.hight)))
 		{
 			return 1;
 		}
-		else if((this.lat == c.lat)&&(this.lon == c.lon)&&(this.h == c.h))
+		else if((this.lat == cord.lat)&&(this.lon == cord.lon)&&(this.hight == cord.hight))
 		{
 			return 0;
 		}
@@ -138,6 +207,14 @@ public class Coordinate implements Comparable<Object>
 		}
 	}
 	
+	/**
+	 * Gibt einen String aus der die Koordinate beschreibt
+	 * 
+	 * @return
+	 * String der die Koordinate beschreibt
+	 */
+	
+	@Override
 	public String toString()
 	{
 		return "Lat:"+this.lat+", Lon:"+this.lon;

@@ -1,13 +1,18 @@
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.io.SyncFailedException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,36 +28,83 @@ import org.w3c.dom.*;
 
 public class Reader 
 {
-	public static Forecast independentTake(File file)
+	
+	/**
+	 * Extrahiert die neusten Wettervorhersagedaten von der opendata-Website des DWD und
+	 * erstellt ein Forecast-Daten-Obbjekt. Es werden keine Daten auf der Harddrive abgelegt.
+	 * 
+	 * @return
+	 * Ein Forecast-Daten-Obbjekt mit allen aktuellen Wettervorhersagedaten fuer Deutschland
+	 */
+	
+	public static Forecast take()
 	{
-		File kmlFile;
-		String name = file.getName();
-		String kmz ="kmz";
-		String kml ="kml";
-		String type;
-		
-		Pattern pattern = Pattern.compile("\\w*\\.(\\w*)");
-		Matcher matcher = pattern.matcher(name);
-		matcher.find();
-		
-		type = matcher.group(1);
-		
-		if(type.equals(kmz)&&file.exists())
-		{
-			kmlFile = extract(file);
-			return take(kmlFile);
-		}
-		else if(type.equals(kml)&&file.exists())
-		{
-			return take(file);
-		}
-		return null;
+		try (BufferedInputStream in = new BufferedInputStream(new URL("https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz").openStream()))
+				{
+					ZipInputStream zin = new ZipInputStream(in);
+					zin.getNextEntry();
+					InputStream data = zin;
+					
+					DocumentBuilderFactory factory;
+					DocumentBuilder builder = null;
+					factory = DocumentBuilderFactory.newInstance();
+					try 
+					{
+						builder = factory.newDocumentBuilder();
+					} 
+					catch (ParserConfigurationException e) 
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						in.close();
+						zin.close();
+						data.close();
+						return null;
+					}
+					
+					Document doc = null;
+					try 
+					{
+						doc = builder.parse(data);
+					} 
+					catch (SAXException | IOException e) 
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						in.close();
+						zin.close();
+						data.close();
+						return null;
+					}
+					
+					Forecast forecast = new Forecast();
+					
+					forecast.times = getTimes(doc);
+					
+					getData(doc,forecast);
+					in.close();
+					zin.close();
+					data.close();
+					return forecast;
+					
+				} catch (IOException e) {
+				    // handle exception
+					return null;
+				}
 	}
 	
+	/**
+	 * Extrahiert die Wettervorhersagedaten aus einer Mosmix-KML-Datei und
+	 * erstellt ein Forecast-Daten-Obbjekt. 
+	 * 
+	 * @param kmlFile
+	 * Datei die eingelesen werden soll
+	 * @return
+	 * Ein Forecast-Daten-Obbjekt mit allen Wettervorhersagedaten fuer Deutschland aus der Datei
+	 */
 	
 	public static Forecast take(File kmlFile)
 	{
-		
 		
 		DocumentBuilderFactory factory;
 		DocumentBuilder builder = null;
@@ -87,18 +139,15 @@ public class Reader
 		return forecast;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Liest das der KML-Datei zugrundeliegende Dokument ein und
+	 * uebertraegt die Daten auf ein Forecast-Objekt
+	 * 
+	 * @param d
+	 * Dokument das eingelesen wird
+	 * @param f
+	 * Forecast-Objekt auf das die Daten uebertragen werden
+	 */
 	
 	private static void getData(Document d, Forecast f)
 	{
@@ -127,7 +176,7 @@ public class Reader
 				stationData = getStationData(station);
 				f.cordConect.put(coordinate, stationData);
 			}
-			else if((!coordinate.trueEquals(cordList.get(dupIndex)))&&(coordinate.h<cordList.get(dupIndex).h))
+			else if((!coordinate.trueEquals(cordList.get(dupIndex)))&&(coordinate.hight<cordList.get(dupIndex).hight))
 			{
 				cordList.remove(dupIndex);
 				cordList.add(dupIndex,coordinate);
@@ -140,8 +189,14 @@ public class Reader
 		f.positionRegister = cordArray;
 	}
 	
-	
-	
+	/**
+	 * Liest die Stationsdaten aus einem Stationselement ein und erzeugt ein Stationsdaten-Objekt
+	 * 
+	 * @param stationElement
+	 * Stationselement aus dem Dokument aus dem die Daten extrahiert werden
+	 * @return
+	 * Stationsdaten-Objekt mit allen relevanten Daten
+	 */
 	
 	private static StationData getStationData(Element stationElement) 
 	{
@@ -275,34 +330,57 @@ public class Reader
 		return stationData;
 	}
 	
+	/**
+	 * Selektiert die Stationselemente in der Nodelist abhaengig davon, ob die Stationen sich innerhalb eines
+	 * geografischen Quadrats befinden und erstellt ein Array mit allen positiven Ergebnissen.
+	 * 
+	 * @param nodeList
+	 * Nodelist mit den Stationselementen die selektiert werden sollen
+	 * @param latMax
+	 * Latitude-Obergrenze des Quadrats
+	 * @param latMin
+	 * Latitude-Untergrenze des Quadrats
+	 * @param lonMax
+	 * Longitude-Obergrenze des Quadrats
+	 * @param lonMin
+	 * Longitude-Untergrenze des Quadrats
+	 * @return
+	 * Array mit allen Stationselementen innerhalb des Quadrats
+	 */
 	
-	
-	
-	
-	private static Element[] reduceStationtableByLocation(NodeList s, double latMax, double latMin, double lonMax, double lonMin)
+	private static Element[] reduceStationtableByLocation(NodeList nodeList, double latMax, double latMin, double lonMax, double lonMin)
 	{
-		Element sta;
+		Element station;
 		boolean valid;
 		LinkedList<Element> list = new LinkedList<Element>();
 		Element[] nodeArray = null;
 		
-		for(int i = 0; i<s.getLength(); i++)
+		for(int i = 0; i<nodeList.getLength(); i++)
 		{
-			sta = (Element) s.item(i);
-			NodeList cnl = sta.getElementsByTagName("kml:coordinates");
+			station = (Element) nodeList.item(i);
+			NodeList cnl = station.getElementsByTagName("kml:coordinates");
 			Node cordNode = cnl.item(0);
 			String cordText = cordNode.getTextContent();
 			Coordinate cord = Coordinate.kmlTextToCord(cordText);
 			valid = cord.insideField(new Coordinate(latMax,lonMax), new Coordinate(latMin,lonMin));
 			if(valid)
 			{
-				list.add(sta);
+				list.add(station);
 			}
 		}
 
 		nodeArray = (Element[]) list.toArray(new Element[list.size()]);
 		return nodeArray;
 	}
+	
+	/**
+	 * Erstellt einen Array mit allen Vorhersagezeitpunkten in den Daten
+	 * 
+	 * @param d
+	 * Dokument das eingelesen wird
+	 * @return
+	 * Array mit allen vorhandenen Vorhersagezeitpunkten
+	 */
 	
 	private static Date[] getTimes(Document d)
 	{
@@ -342,83 +420,21 @@ public class Reader
 		return dates;
 	}
 	
+	/**
+	 * Gibt den Namen der Station aus dem Stationselement aus
+	 * 
+	 * @param e
+	 * Gegebenes Stationselement
+	 * @return
+	 * Name der Station als String
+	 */
+	
 	static private String elementName(Element e)
 	{
 		Node eNameN = e.getElementsByTagName("kml:description").item(0);
 		return eNameN.getTextContent();
 	}
 	
-	static public File extract(File file) 
-	{
-		File here = new File("");
-		File out = null;
-
-		String s = here.getAbsolutePath();
-		
- 		File dummy = new File("dummy.zip");
-		file.renameTo(dummy);
-		try {
-			out = unZip(dummy, s);
-			Thread.sleep(3000);
-			dummy.delete();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return out;
-	}
-	
-	private static File unZip(File zipFile, String outputFolder) throws Exception {
-
-	    byte[] buffer = new byte[1024];
-	    File nameChange = new File("MOSMIX_S_LATEST_240.kml");
-	    if(nameChange.exists())
-	    {
-	    	nameChange.delete();
-	    }
-
-	    File folder = new File(outputFolder);
-	    if (!folder.exists()) {
-	        folder.mkdir();
-	    }
-
-	    ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
-	    ZipEntry ze = zis.getNextEntry();
-
-	    while (ze != null) {
-
-	        String fileName = ze.getName();
-
-	        File newFile = new File(outputFolder + File.separator + fileName);
-
-	        //System.out.println("file unzip : " + newFile.getAbsoluteFile());
-
-	        new File(newFile.getParent()).mkdirs();
-
-	        if (ze.isDirectory())
-	        {
-	            newFile.mkdir();
-	            ze = zis.getNextEntry();
-	            continue;
-	        }
-
-	        FileOutputStream fos = new FileOutputStream(newFile);
-
-	        int len;
-	        while ((len = zis.read(buffer)) > 0) {
-	            fos.write(buffer, 0, len);
-	        }
-
-	        fos.close();
-	        ze = zis.getNextEntry();
-	        newFile.renameTo(nameChange);
-	    }
-
-	    zis.closeEntry();
-	    zis.close();
-	    return nameChange;
-	}
 }
-
-
+	
+	
