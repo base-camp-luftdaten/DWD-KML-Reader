@@ -25,13 +25,15 @@ public class Main
 		double[] temp = forecast.temperatur(von, bis, station);
 		//Die zugehoerigen Zeitpunkte zu den Vorhersagen
 		Date[] times = forecast.zeitschritte(von, bis);
+		//ACHTUNG ES MUSS GELTEN: forecast.firstAvailableDate() <= von <= bis <= forecast.lastAvailableDate()
+		//ANDERNFALLS TRITT EINE ARRAYINDEXOUTOFBOUNDSEXEPTION AUF
 		
 		//Konsolen Ausgabe
 		System.out.println(station.name+": "+station.coordinate.toString()+
 				", Distanz: "+station.coordinate.distance(new Coordinate(lat,lon)));
 		for(int i = 0; i < times.length; i++)
 		{
-			System.out.println(times[i].toString()+": "+temp[i]+"°C");
+			System.out.println(times[i].toString()+": "+temp[i]+"Â°C");
 		}
 		
 	}
