@@ -6,7 +6,7 @@ https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/.
 Mit: "Reader.take()" lässt sich nun ein Forecast-Objekt mit den aktuellsten Daten erstellen.
 Dabei werden keine Daten auf der Harddrive abgelegt, es wird aber eine Internetverbindung vorrausgesetzt.
 
-An dem wiederum lässt sich die Funktion:
+An dem Forecast-Objekt lässt sich die Funktion:
 
 "StationData station = forecast.getStation(double lat,double lon)" 
 
@@ -21,4 +21,4 @@ rechenaufwendig ist und die entsprechende Referenz auf diese Weise weiterverwend
 
 Ein Beispiel für die Verwendung des Readers findet sich in der "main"-Klasse.
 
-vorerst keine weiteren Änderungen geplant. 
+Vorerst sind keine weiteren Änderungen geplant. 
