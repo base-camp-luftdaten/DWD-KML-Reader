@@ -4,7 +4,7 @@ Java-Projekt zum einlesen von KML-Dateien des DWD-MOSMIX-Programms:
 https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/. 
 
 Mit: "Reader.take()" lässt sich nun ein Forecast-Objekt mit den aktuellsten Daten erstellen.
-Dabei werden keine Daten auf der Harddrive abgelegt.
+Dabei werden keine Daten auf der Harddrive abgelegt, es wird aber eine Internetverbindung vorrausgesetzt.
 
 An dem wiederum lässt sich die Funktion:
 
