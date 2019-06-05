@@ -2,6 +2,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,7 +104,7 @@ public class Reader
 	 * Ein Forecast-Daten-Obbjekt mit allen Wettervorhersagedaten fuer Deutschland aus der Datei
 	 */
 	
-	public static Forecast take(File kmlFile)
+	public static Forecast takeKML(File kmlFile)
 	{
 		
 		DocumentBuilderFactory factory;
@@ -137,6 +138,82 @@ public class Reader
 		getData(doc,forecast);
 		
 		return forecast;
+	}
+	
+	/**
+	 * Extrahiert die Wettervorhersagedaten aus einer Mosmix-KMZ-Datei und
+	 * erstellt ein Forecast-Daten-Obbjekt. 
+	 * 
+	 * @param kmzFile
+	 * Datei die eingelesen werden soll
+	 * @return
+	 * Ein Forecast-Daten-Obbjekt mit allen Wettervorhersagedaten fuer Deutschland aus der Datei
+	 */
+	
+	public static Forecast takeKMZ(File kmzFile)
+	{
+		InputStream in;
+		ZipInputStream zin;
+		InputStream data;
+		
+		try 
+		{
+			in = new FileInputStream(kmzFile);
+			zin = new ZipInputStream(in);
+			zin.getNextEntry();
+			data = zin;
+		
+			DocumentBuilderFactory factory;
+			DocumentBuilder builder = null;
+			factory = DocumentBuilderFactory.newInstance();
+			try 
+			{
+				builder = factory.newDocumentBuilder();
+			} 
+			catch (ParserConfigurationException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				in.close();
+				zin.close();
+				data.close();
+				return null;
+			}
+			
+			Document doc = null;
+			try 
+			{
+				doc = builder.parse(data);
+			} 
+			catch (SAXException | IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				in.close();
+				zin.close();
+				data.close();
+				return null;
+			}
+			
+			Forecast forecast = new Forecast();
+			
+			forecast.times = getTimes(doc);
+			
+			getData(doc,forecast);
+			
+			in.close();
+			zin.close();
+			data.close();
+			
+			return forecast;
+			
+		} 
+		catch (IOException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
