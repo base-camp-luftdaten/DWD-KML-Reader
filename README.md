@@ -19,6 +19,6 @@ verwendet werden um einen Double-Array mit dem gewünschten Attribut in dem gew�
 Die Aufteilung der Anfrage in zwei Funktionen ist notwendig, da die Suche nach der nächstgelegenen Station relativ
 rechenaufwendig ist und die entsprechende Referenz auf diese Weise weiterverwendet werden kann.
 
-Ein Beispiel für die Verwendung des Readers findet sich in der "main"-Klasse.
+Ein Beispiel für die Verwendung des Readers findet sich in der "main"-Klasse. (Main-File nicht teil der Anwendung)
 
 Vorerst sind keine weiteren Änderungen geplant. 
