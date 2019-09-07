@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.Date;
 
 public class Main 
@@ -10,6 +9,8 @@ public class Main
 		//Forecast forecast = Reader.takeKML(new File("MOSMIX_S_2019060515_240.kml"));
 		//Forecast forecast = Reader.takeKMZ(new File("MOSMIX_S_2019060515_240.kmz"));
 		
+		//"forecast.doIContainErrors()" ueberprueft die vorhandenen Daten auf Luecken
+		System.out.println("Enthaelt Fehler: "+forecast.doIContainErrors());
 		System.out.println("Stationen online: "+forecast.positionRegister.length);
 		
 		Date von = forecast.firstAvailableDate();
@@ -18,8 +19,8 @@ public class Main
 		//Date(int year -1900, int month -1, int date, int hrs, int min)
 		Date example = new Date(119, 5, 3, 12, 0); // 03.06.2019, 12:00 
 		
-		double lat = 53.599688;
-		double lon = 9.933204;
+		double lat = 51.02;
+		double lon = 9.88;
 		
 		//Aus effizienzgruenden aufgeteilt, um mehre Funktionsaufrufe mit dem selben
 		//StationData-Objekt zu ermoeglichen, ohne das dies neu gesucht werden muss.
