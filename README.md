@@ -25,5 +25,5 @@ edit (07.09.2019 - 03:00):
 Nach Überprüfung stellte sich heraus, dass ca. 4% der vom Wetterdienst erhaltenen Daten stark fehlerhaft oder nicht 
 vorhanden sind. Dieses Problem sollte nun behoben sein, ohne dass dafür fehlerfreie Daten verloren gehen. Mit der
 Funktion: "doIContainErrors()" der Forecast-Klasse kann überprüft werden, ob die vorhandenen Daten trotzdem noch 
-Lücken (NaN-Werte) enthalten (false = keine Fehler). Sollte das der Fall sein, ist dies Indikator für einen Bug und sollte mir am besten 
+Lücken (NaN-Werte) enthalten (false = keine Lücken). Sollte das der Fall sein, ist dies Indikator für einen Bug und sollte mir am besten 
 mitgeteilt werden, damit ich den Bug beheben kann.
